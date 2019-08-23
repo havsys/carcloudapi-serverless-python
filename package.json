@@ -1,0 +1,12 @@
+{
+  "name": "messenger-backend",
+  "description": "Messenger's Backend project",
+  "license": "UNLICENSED",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "serverless-offline": "^5.10.1",
+    "serverless-plugin-aws-alerts": "^1.4.0",
+    "serverless-python-requirements": "^5.0.0"
+  }
+}

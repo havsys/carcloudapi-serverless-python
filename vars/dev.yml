@@ -1,0 +1,65 @@
+changePasswordLambdaRoleArn: arn:aws:iam::083237383649:role/W_development-MessengerChangePassword
+changePasswordSecurityGroupId: sg-009c2e742a43d7c44
+
+cognitoUserPoolId: us-east-1_i3BLN0cMV
+cognitoUserPoolClientId: 54uo5dja78t3evj35v6jpuijb0
+
+privateSubnetIds:
+  - subnet-390c8973
+  - subnet-f0ec1dac
+  - subnet-4036f227
+
+DBHost: 'localhost'
+DBUser: 'root'
+DBPass: ''
+DBName: 'carcloud'
+
+pythonRequirements:
+  dockerizePip: true
+  slim: true
+  useDownloadCache: true
+  useStaticCache: true
+
+lambdaLogRetention: 7
+
+alerts:
+  dashboards: false
+  topics:
+    alarm:
+      topic: ${opt:stage}-messenger-log-alerts
+      notifications:
+      - protocol: email
+        endpoint: rafal@carcloud.com
+      - protocol: email
+        endpoint: dan@carcloud.com
+  alerts:
+    function:
+    - name: codeErrors
+      metric: CodeErrors
+      threshold: 0
+      evaluationPeriods: 1
+      comparisonOperator: GreaterThanThreshold
+      pattern: 'Error'
+  definitions:
+    functionErrors:
+      treatMissingData: notBreaching
+    codeErrors:
+      metric: CodeErrors
+      namespace: 'AWS/Lambda'
+      statistic: Sum
+      period: 60
+      threshold: 0
+      evaluationPeriods: 1
+      comparisonOperator: GreaterThanThreshold
+      pattern: 'Error'
+    codeExceptions:
+      metric: CodeExceptions
+      namespace: 'AWS/Lambda'
+      statistic: Sum
+      period: 60
+      threshold: 0
+      evaluationPeriods: 1
+      comparisonOperator: GreaterThanThreshold
+      pattern: 'Exception'
+  alarms:
+  - codeErrors

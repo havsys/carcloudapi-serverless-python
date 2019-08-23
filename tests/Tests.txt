@@ -1,0 +1,98 @@
+1. Success api call
+Method: POST
+Endpoint: /campaign
+Body: {
+	"campany_id": "company-12345",
+	"template_id": "template-12345",
+	"target_url": "targeturl-12345",
+	"company_type": "SMS"
+}
+Response: 200 OK
+Response Body: {
+    "description": "Campaign created successfully",
+    "content": {
+        "id": "72a8cecc-0ab5-4cb2-b885-004e990f180d",
+        "client_id": "",
+        "template_id": "template-12345",
+        "company_type": "SMS",
+        "target_url": "targeturl-12345",
+        "schedule": "",
+        "phone_field_name": "",
+        "mobile_field_name": "",
+        "billing_reference_field_name": "",
+        "message_content": "",
+        "sender_name": "",
+        "created_at": "22/08/2019 14:14:33",
+        "updated_at": "22/08/2019 14:14:33",
+        "deleted_at": ""
+    }
+}
+2. Fail JSON parse exception
+Method: POST
+Endpoint: /campaign
+Body: {
+	"campany_id": "company-12345",
+	"template_id": "template-12345",
+	"target_url": "targeturl-12345"
+	"company_type": "SMS"
+}
+Response: 422 Unprocessable Entity
+Response Body: {
+    "description": "Invalid object provided",
+    "content": {
+        "reason": "Api validation error",
+        "errors": [
+            {
+                "field": "",
+                "message": "JSON parse exception"
+            }
+        ]
+    }
+}
+3. Fail missing parameters
+Method: POST
+Endpoint: /campaign
+Body: {
+	"campany_id": "company-12345",
+	"template_id": "template-12345",
+	"company_type": "SMS"
+}
+Response: 422 Unprocessable Entity
+Response Body: {
+    "description": "Invalid object provided",
+    "content": {
+        "reason": "Api validation error",
+        "errors": [
+            {
+                "field": "template_id",
+                "message": "Missing field template_id"
+            }
+        ]
+    }
+}
+4. Fail Not found
+Method: GET
+Endpoint: /campaign
+Response: 404 Not found
+Response Body: {
+    "statusCode": 404,
+    "error": "Serverless-offline: route not found.",
+    "currentRoute": "get - /campaign",
+    "existingRoutes": [
+        "post - /campaign",
+        "post - /{apiVersion}/functions/messenger-backend-dev-create_campaign/invocations"
+    ]
+}
+5. Fail Not found
+Method: Any
+Endpoint: /camp
+Response: 404 Not found
+Response Body: {
+    "statusCode": 404,
+    "error": "Serverless-offline: route not found.",
+    "currentRoute": "get - /campaign",
+    "existingRoutes": [
+        "post - /campaign",
+        "post - /{apiVersion}/functions/messenger-backend-dev-create_campaign/invocations"
+    ]
+}

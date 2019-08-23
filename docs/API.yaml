@@ -1,0 +1,889 @@
+openapi: "3.0.0"
+info:
+  description: "This is the Messenger's API design."
+  version: "1.0.0"
+  title: "CarCloud Messenger"
+  contact:
+    email: "rafal@carcloud.com"
+servers:
+  - url: "https://messenger.carcloud.com/v1"
+security:
+  - bearer: [user, admin]
+paths:
+  /admin/company:
+    get:
+      security:
+        - bearer: [admin]
+      tags:
+        - "admin/company"
+      summary: "List all the companies"
+      description: "List all the companies"
+      operationId: "getCompanies"
+      responses:
+        200:
+          description: "List of companies fetched successfully"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Company"
+        401:
+          description: "User unauthorized for the action"
+    post:
+      security:
+        - bearer: [admin]
+      tags:
+        - "admin/company"
+      summary: "Create a new company"
+      description: ""
+      operationId: "addCompany"
+      requestBody:
+        description: "Company object that needs to be saved"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Company"
+      responses:
+        200:
+          description: "Successfully created the company"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+        401:
+          description: "User unauthorized for the action"
+        422:
+          description: "Invalid input"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiValidationError"
+  /admin/company/{companyId}:
+    get:
+      security:
+        - bearer: [admin]
+      tags:
+        - "admin/company"
+      summary: "Find a company by ID"
+      description: "Returns a single company"
+      operationId: "getCompanyById"
+      parameters:
+        - name: "companyId"
+          in: "path"
+          description: "ID of a company to return"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        200:
+          description: "Successfuly fetched the company"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Company not found"
+    put:
+      security:
+        - bearer: [admin]
+      tags:
+        - "admin/company"
+      summary: "Update an existing company"
+      description: ""
+      operationId: "updateCompany"
+      parameters:
+        - name: "companyId"
+          in: "path"
+          description: "ID of a company to update"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        description: "Company object that needs to be updated"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Company"
+      responses:
+        200:
+          description: "Successfully updated the company"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Company"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "User unauthorized for the action"
+        404:
+          description: "Company not found"
+        422:
+          description: "Validation exception"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiValidationError"
+    delete:
+      security:
+        - bearer: [admin]
+      tags:
+        - "admin/company"
+      summary: "Deletes a company"
+      description: ""
+      operationId: "deleteCompany"
+      parameters:
+        - name: "companyId"
+          in: "path"
+          description: "Company ID to delete"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        200:
+          description: "Successfully deleted the company"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "User unauthorized for the action"
+        404:
+          description: "Company not found"
+  /admin/company/{companyId}/metrics:
+    get:
+      security:
+        - bearer: [admin]
+      tags:
+        - "admin/company"
+      summary: "Fetch company's metrics"
+      description: "Returns metrics for a single company"
+      operationId: "getCompanyMetricsById"
+      parameters:
+        - name: "companyId"
+          in: "path"
+          description: "ID of the company"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        200:
+          description: "Successfuly fetched the metrics"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Metric"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "Company not found"
+  /admin/company/{companyId}/user:
+    get:
+      security:
+        - bearer: [admin]
+      tags:
+        - "admin/user"
+      summary: "List all the users assigned to a company"
+      description: "List all the users assigned to a company"
+      operationId: "getUsers"
+      parameters:
+        - name: "companyId"
+          in: "path"
+          description: "ID of the company"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        200:
+          description: "List of users fetched successfully"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/User"
+        401:
+          description: "User unauthorized for the action"
+    post:
+      security:
+        - bearer: [admin]
+      tags:
+        - "admin/user"
+      summary: "Adds a new user to a company"
+      description: ""
+      operationId: "addUser"
+      parameters:
+        - name: "companyId"
+          in: "path"
+          description: "ID of company to return"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        description: "User object that needs to be saved"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        200:
+          description: "Successfully created a user"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        401:
+          description: "User unauthorized for the action"
+        422:
+          description: "Invalid input"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiValidationError"
+  /admin/company/{companyId}/user/{userId}:
+    get:
+      security:
+        - bearer: [admin]
+      tags:
+        - "admin/user"
+      summary: "Finds a user by ID"
+      description: "Returns a single user"
+      operationId: "getUserById"
+      parameters:
+        - name: "companyId"
+          in: "path"
+          description: "ID of company which contains the user"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "userId"
+          in: "path"
+          description: "ID of user to return"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        200:
+          description: "Successfuly fetched the user"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: "Invalid ID supplied"
+        404:
+          description: "User not found"
+    put:
+      security:
+        - bearer: [admin]
+      tags:
+        - "admin/user"
+      summary: "Update an existing user"
+      description: ""
+      operationId: "updateUser"
+      parameters:
+        - name: "companyId"
+          in: "path"
+          description: "ID of company to return"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "userId"
+          in: "path"
+          description: "ID of a user to update"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        description: "User object that needs to be updated"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/User"
+      responses:
+        200:
+          description: "Successfully updated a user"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "User unauthorized for the action"
+        404:
+          description: "Userf not found"
+        422:
+          description: "Validation exception"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiValidationError"
+    delete:
+      security:
+        - bearer: [admin]
+      tags:
+        - "admin/user"
+      summary: "Deletes a user"
+      description: ""
+      operationId: "deleteUser"
+      parameters:
+        - name: "companyId"
+          in: "path"
+          description: "Company ID that contains the user"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+        - name: "userId"
+          in: "path"
+          description: "User ID to delete"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        200:
+          description: "Successfully deleted the user"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "User unauthorized for the action"
+        404:
+          description: "User not found"
+  /campaign:
+    get:
+      tags:
+        - "campaign"
+      summary: "List company's campaigns"
+      description: "List all campaigns that belong to a company"
+      operationId: "getCampaigns"
+      responses:
+        200:
+          description: "List of company's campaigns"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Campaign"
+
+    post:
+      tags:
+        - "campaign"
+      summary: "Create a campaign"
+      description: "Creates a new campaign for a company"
+      operationId: "createCampaign"
+      requestBody:
+        description: "Campaign object to save"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Campaign"
+      responses:
+        200:
+          description: "Campaign created successfully"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        422:
+          description: "Invalid object provided"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiValidationError"
+  /campaign/{campaignId}:
+    get:
+      tags:
+        - "campaign"
+      summary: "Get a single campaign"
+      description: "Returns a single campaign"
+      operationId: "getCampaign"
+      parameters:
+        - name: "campaignId"
+          in: "path"
+          description: "Campaign id to fetch"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        200:
+          description: "Requested campaign"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "User unauthorized for the action"
+        404:
+          description: "Campaign not found"
+    put:
+      tags:
+        - "campaign"
+      summary: "Update a campaign"
+      description: "Updates a chosen campaign"
+      operationId: "updateCampaign"
+      parameters:
+        - name: "campaignId"
+          in: "path"
+          description: "Campaign id to update"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        description: "Campaign object with values to update"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Campaign"
+      responses:
+        200:
+          description: "Successfully updated a campaign"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Campaign"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "User unauthorized for the action"
+        404:
+          description: "Campaign not found"
+        422:
+          description: "Invalid object provided"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiValidationError"
+    delete:
+      tags:
+        - "campaign"
+      summary: "Deletes a campaign"
+      description: "Deletes a chosen campaign"
+      operationId: "deleteCampaign"
+      parameters:
+        - name: "campaignId"
+          in: "path"
+          description: "Campaign id to delete"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        200:
+          description: "Successfully deleted a campaign"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "User unauthorized for the action"
+        404:
+          description: "Campaign not found"
+  /campaign/{campaignId}/messages:
+    post:
+      tags:
+        - "campaign"
+      summary: "Add recipient to a campaign"
+      description: "Adds a recipient to a campaign to receive messages"
+      operationId: "addRecipient"
+      parameters:
+        - name: "campaignId"
+          in: "path"
+          description: "Campaign id for the recipient"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        description: "Recipient's data"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Recipient"
+      responses:
+        200:
+          description: "Successfully added a recipient"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Recipient"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "User unauthorized for the action"
+        404:
+          description: "Campaign not found"
+        422:
+          description: "Invalid parameters provided"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiValidationError"
+  /campaign/{campaignId}/importMessages:
+    post:
+      tags:
+        - "campaign"
+      summary: "Uploads a CSV file and processes it"
+      description: "Adds multiple recipients retrieved from the CSV file"
+      operationId: "addBulkRecipients"
+      parameters:
+        - name: "campaignId"
+          in: "path"
+          description: "Campaign id for the recipient"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      requestBody:
+        description: "CSV file to process"
+        required: true
+        content:
+          text/csv:
+            schema:
+              format: base64
+      responses:
+        200:
+          description: "Recipients imported successfully"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Recipient"
+        400:
+          description: "Invalid ID supplied"
+        401:
+          description: "User unauthorized for the action"
+        404:
+          description: "Campaign not found"
+        422:
+          description: "Invalid data in the CSV file"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiValidationError"
+  /metrics:
+    get:
+      tags:
+        - "metrics"
+      summary: "Fetch client's metrics"
+      description: "Fetches all client's metrics for all campaigns"
+      operationId: "getMetrics"
+      responses:
+        200:
+          description: "Successfully updated a campaign"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Metric"
+  /metrics/{campaignId}:
+    get:
+      tags:
+        - "metrics"
+      summary: "Fetch campaign's metrics"
+      description: "Fetch metrics for a specific campaign"
+      operationId: "getMetricsForCampaign"
+      parameters:
+        - name: "campaignId"
+          in: "path"
+          description: "Campaign id to update"
+          required: true
+          schema:
+            type: "string"
+            format: "uuid"
+      responses:
+        200:
+          description: "Successfully updated a campaign"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/components/schemas/Metric"
+        401:
+          description: "User unauthorized for the action"
+  /user/password/inititateRemind:
+    post:
+      security: []
+      tags:
+        - "user"
+      summary: "Initiate reset password"
+      description: "Initiate reset user's password process"
+      operationId: "initResetUserPassword"
+      requestBody:
+        description: "Username"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+      responses:
+        200:
+          description: "Reset password process initiated successfully"
+        401:
+          description: "User unauthorized for the action"
+  /user/password/remind:
+    post:
+      security: []
+      tags:
+        - "user"
+      summary: "Reset password"
+      description: "Resets user's password based on a token"
+      operationId: "resetUserPassword"
+      requestBody:
+        description: "Reset password token"
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                token:
+                  type: string
+      responses:
+        200:
+          description: "Password reset successfully"
+        400:
+          description: "Invalid token provided"
+  /user/password/change:
+    post:
+      tags:
+        - "user"
+      summary: "Change user's password"
+      description: "Change user's password to a new one"
+      operationId: "changePassword"
+      requestBody:
+        description: "Change password's request"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/ChangePassword"
+      responses:
+        200:
+          description: "Password changed successfully"
+        401:
+          description: "User unauthorized for the action"
+        422:
+          description: "Invalid parameters"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ApiValidationError"
+components:
+  securitySchemes:
+    oauth:
+      type: "oauth2"
+      flows:
+        clientCredentials:
+          tokenUrl: "https://messenger.carcloud.com/token"
+          scopes: {}
+    bearer:
+      type: "http"
+      scheme: "bearer"
+  schemas:
+    Campaign:
+      type: "object"
+      required:
+        - "template_id"
+        - "target_url"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+          readOnly: true
+        client_id:
+          type: "string"
+          format: "uuid"
+          readOnly: true
+        template_id:
+          type: "string"
+          format: "uuid"
+        type:
+          type: "string"
+          enum: ["AUTOMATIC", "SMS", "WHATSAPP"]
+          default: "AUTOMATIC"
+        target_url:
+          type: "string"
+        schedule:
+          type: "string"
+        phone_field_name:
+          type: "string"
+        mobile_field_name:
+          type: "string"
+        billing_reference_field_name:
+          type: "string"
+        message_content:
+          type: "string"
+        sender_name:
+          type: "string"
+        created_at:
+          type: "string"
+          format: "date-time"
+          default: now()
+          readOnly: true
+        updated_at:
+          type: "string"
+          format: "date-time"
+          readOnly: true
+        deleted_at:
+          type: "string"
+          format: "date-time"
+          readOnly: true
+    ChangePassword:
+      type: "object"
+      required:
+        - "old_password"
+        - "new_password"
+      properties:
+        old_password:
+          type: "string"
+          format: "password"
+        new_password:
+          type: "string"
+          format: "password"
+    Company:
+      type: "object"
+      required:
+        - "name"
+        - "send_cost"
+        - "send_cost_subsequent"
+        - "timezone"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+          readOnly: true
+        name:
+          type: "string"
+        currency:
+          type: "string"
+        send_cost:
+          type: "number"
+          example: 0.3
+        send_cost_subsequent:
+          type: "number"
+          example: 0.2
+        timezone:
+          type: "string"
+          example: "UTC"
+        created_at:
+          type: "string"
+          format: "date-time"
+          default: now()
+          readOnly: true
+        updated_at:
+          type: "string"
+          format: "date-time"
+          readOnly: true
+        deleted_at:
+          type: "string"
+          format: "date-time"
+          readOnly: true
+    Metric:
+      type: "object"
+      required:
+        - "date"
+        - "count"
+      properties:
+        date:
+          type: "string"
+          format: "date"
+          readOnly: true
+        count:
+          type: "integer"
+          example: 10
+          readOnly: true
+    Recipient:
+      type: "object"
+      required:
+        - "parameters"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+          readOnly: true
+        parameters:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              key:
+                type: "string"
+              value:
+                type: "string"
+        message_content:
+          type: "string"
+        sender_name:
+          type: "string"
+        mobile_number:
+          type: "string"
+    User:
+      type: "object"
+      required:
+        - "email"
+      properties:
+        id:
+          type: "string"
+          format: "uuid"
+          readOnly: true
+        client_id:
+          type: "string"
+          format: "uuid"
+          readOnly: true
+        email:
+          type: "string"
+          format: "email"
+        created_at:
+          type: "string"
+          format: "date-time"
+          default: now()
+          readOnly: true
+        updated_at:
+          type: "string"
+          format: "date-time"
+          readOnly: true
+        deleted_at:
+          type: "string"
+          format: "date-time"
+          readOnly: true
+    ApiValidationError:
+      type: "object"
+      properties:
+        reason:
+          type: "string"
+        errors:
+          type: "array"
+          items:
+            type: "object"
+            properties:
+              field:
+                type: "string"
+              message:
+                type: "string"
